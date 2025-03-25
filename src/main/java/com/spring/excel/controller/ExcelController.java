@@ -26,7 +26,7 @@ public class ExcelController {
     @GetMapping("/parse-excel")
     public List<List<String>> parseExcel() throws IOException { //@RequestParam("filePath") String filePath
     	//ClassResourcePath()
-    	String classPath = "excel/dmart_application.xlsx";
+    	String classPath = "excel/customer.xlsx";
         return excelParserService.parseExcelFile(classPath);
     }
     

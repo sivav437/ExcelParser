@@ -17,6 +17,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.excel.model.Customer;
+
 @Service
 public class ExcelParserService {
 	
@@ -38,11 +40,27 @@ public class ExcelParserService {
                    // Iterate over cells in the row
                    
                    Iterator<Cell> cellIterator = ((Row) row).cellIterator();
+                   if(row.getRowNum()==1) {
+                	   System.out.println("GetRowNum is 1");
+                   }
                    
                    while (cellIterator.hasNext()) {
+                	   
                        Cell cell = cellIterator.next();
+                       System.out.println(cell.getRowIndex()+"-- cell.getRowIndex");
+                       System.out.println(cell.getColumnIndex()+"-- cell.getcolumnidx");
                        String cellValue = getCellValueAsString(cell);
+                       
+                       if(cell.getRowIndex()==1) {
+                    	   continue;
+                    	   
+                       }
+                       if(cell.getColumnIndex()==0) {
+                    	   System.out.println(cell.getCellType()+" cell type ");
+                       }
+                       
                        rowData.add(cellValue);
+                       
                    }
 //                   for (Cell cell : row) {
 //                       String cellValue = getCellValueAsString(cell);
@@ -84,6 +102,7 @@ public class ExcelParserService {
 	public List<List<String>> parseExcelFromUpload(MultipartFile file) throws IOException{
 		
 		List<List<String>> data = new ArrayList<>();
+		List<Customer> customers=new ArrayList<>();
 		
 		try (InputStream inputStream = file.getInputStream();
 	             Workbook workbook = WorkbookFactory.create(inputStream)) {
@@ -98,8 +117,10 @@ public class ExcelParserService {
 
 	                // Use cellIterator to iterate over cells in the row
 	                Iterator<Cell> cellIterator = row.cellIterator();
+	                System.out.println("--> ");
 	                while (cellIterator.hasNext()) {
 	                    Cell cell = cellIterator.next();
+	                    
 	                    String cellValue = getCellValueAsString(cell);
 	                    rowData.add(cellValue);
 	                }
