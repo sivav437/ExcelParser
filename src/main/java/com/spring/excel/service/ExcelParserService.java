@@ -28,25 +28,33 @@ public class ExcelParserService {
         
         try (InputStream inputStream = resource.getInputStream();
                 Workbook workbook = WorkbookFactory.create(inputStream)) {
+        	
 
                // Get the first worksheet
                Sheet sheet = (Sheet) workbook.getSheetAt(0);
 
                // Iterate over rows
-               
+         
                sheet.forEach(row -> {
                    List<String> rowData = new ArrayList<>();
 
                    // Iterate over cells in the row
                    
                    Iterator<Cell> cellIterator = ((Row) row).cellIterator();
-                   if(row.getRowNum()==1) {
-                	   System.out.println("GetRowNum is 1");
+                   if(row.getRowNum()==0) {
+                	   System.out.println("GetRowNum is 0");
                    }
+                   System.out.println("Row nums are "+row.getRowNum()); // starts rows from 0 to value presented.
+                   System.out.println(row.getPhysicalNumberOfCells()+" physical num of cells"); // it gives total cells in a row
+                   System.out.println(row.getLastCellNum()+" laast cell number");
+                   System.out.println(row.getFirstCellNum()+" first cell number");
+                  
+                   
                    
                    while (cellIterator.hasNext()) {
                 	   
                        Cell cell = cellIterator.next();
+                       
                        System.out.println(cell.getRowIndex()+"-- cell.getRowIndex");
                        System.out.println(cell.getColumnIndex()+"-- cell.getcolumnidx");
                        String cellValue = getCellValueAsString(cell);
