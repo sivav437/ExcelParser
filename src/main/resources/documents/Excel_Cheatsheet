@@ -1,0 +1,113 @@
+## EXCEL SHEET SHEET
+
+	ClassPathResource resource = new ClassPathResource(filePath);
+	
+	InputStream inputStream = resource.getInputStream();
+	
+	Workbook workbook = WorkbookFactory.create(inputStream)
+	
+	Sheet sheet = (Sheet) workbook.getSheetAt(0);
+	
+	 sheet.forEach(row -> { ... }
+	 
+	 ## INSIDE for each of sheet
+	 
+	 Iterator<Cell> cellIterator = ((Row) row).cellIterator();
+	 
+	 row.getRowNum() ## gives current row number starts from 0 -> A , B , C like so. ## row 1 has titles.
+	 
+	 row.getPhysicalNumberOfCells() ## gives the presented data of no. cells in current row
+	 
+	 row.getLastCellNum()
+	 
+	 row.getFirstCellNum()
+	 
+	 row.createCell(int column)
+	 
+	 row.forEach()
+	 
+	 row.removeCell()
+	 
+	 row.shiftCellsLeft(int first_shift_clmn_idx, int last_shift_clmn_idx, step)
+	 
+	 row.shiftCellsRight(0, 0, 0)
+	 
+	 row.toString() ## will give html
+	 
+	 row.getCell()
+	 
+	 
+## TO CREATE A WORKBOOK  ( all returns Workbook type )
+
+	import:  org.apache.poi.ss.usermodel.WorkbookFactory; 
+
+	WorkbookFactory.create(inputStream)
+	
+	WorkbookFactory.create(File file)
+	
+	WorkbookFactory.create(File file , String password)
+	
+	WorkbookFactory.create(inputStream, String password)
+	
+	WorkbookFactory.create(File file , String password , boolean readonly)
+	
+## WorkBook Commands  (return type is mostly Sheet)
+
+	workbook.close()
+	
+	workbook.cloneSheet(int sheetNum)
+	
+	workbook.createDataFormat()
+	
+	workbook.createFont()
+	
+	workbook.createName()
+	
+	workbook.createSheet()
+	
+	workbook.forEach((sheet)->{})
+	
+	workbook.getActiveSheetIndex()
+	
+	workbook.getCellStyleAt()
+	
+	workbook.getSheet(String name)
+	
+	workbook.getSheetIndex(name
+	
+	workbook.getNumberOfSheets()
+	
+	workbook.getSheetAt(idx)
+	
+	workbook.iterator()
+	
+## sheet consists of rows.
+
+	sheet.getFirstRowNum()
+	
+	sheet.getLastRowNum()
+	
+	sheet.getHeader()
+	
+	sheet.getFooter()
+	
+	sheet.forEach()
+	
+	sheet.getPhysicalNumberOfRows()
+	
+	
+
+## rows consists of cells.
+
+	Iterator<Cell> cellIterator = ((Row) row).cellIterator();
+	
+	cell.getCellType()
+	
+	cell.getRowIndex()
+	
+	cell.getColumnIndex()
+
+
+
+	
+	
