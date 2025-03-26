@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.spring.excel.model.Customer;
+import com.spring.excel.model.ExcelSheet;
 import com.spring.excel.service.ExcelParserService;
 
 @RestController
@@ -24,10 +26,10 @@ public class ExcelController {
     }
     
     @GetMapping("/parse-excel")
-    public List<List<String>> parseExcel() throws IOException { //@RequestParam("filePath") String filePath
+    public List<List<ExcelSheet>> parseExcel(@RequestParam("classPath") String classPath) throws IOException { //@RequestParam("filePath") String filePath
     	//ClassResourcePath()
-    	String classPath = "excel/customer.xlsx";
-        return excelParserService.parseExcelFile(classPath);
+    	//String classPath = "excel/customer1.xlsx";
+        return (List<List<ExcelSheet>>) excelParserService.parseExcelFile(classPath);
     }
     
 //    @PostMapping("/upload-excel")

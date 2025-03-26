@@ -106,6 +106,30 @@
 	cell.getRowIndex()
 	
 	cell.getColumnIndex()
+	
+## ClassPath Methods
+
+	ClassPathResource resource = new ClassPathResource(filePath);
+	
+	 resource.exists()
+	 
+	 resource.getContentAsByteArray()
+	 
+	  resource.getFile()
+	  
+	  resource.getFilename()
+	  
+	   resource.getInputStream()
+	   
+	   resource.isFile()
+	   
+	   resource.getURL()
+	   
+	   resource.getURI()
+	   
+	   
+	  
+	  
 
 
 
