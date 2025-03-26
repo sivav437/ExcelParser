@@ -1,15 +1,18 @@
 package com.spring.excel.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name="customer")
-public class Customer {
+public class Customer implements ExcelSheet {
 	
 	
 	@Id
+//	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int customer_id;
 	
 	private String customer_name;
@@ -18,6 +21,11 @@ public class Customer {
 
 	public int getCustomer_id() {
 		return customer_id;
+	}
+	
+	public Customer clone() throws CloneNotSupportedException {
+		Customer cloned=(Customer) super.clone();
+		return cloned;
 	}
 
 	public void setCustomer_id(int customer_id) {
