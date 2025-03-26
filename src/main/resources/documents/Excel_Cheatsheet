@@ -35,3 +35,79 @@
 	 row.toString() ## will give html
 	 
 	 row.getCell()
+	 
+	 
+## TO CREATE A WORKBOOK  ( all returns Workbook type )
+
+	import:  org.apache.poi.ss.usermodel.WorkbookFactory; 
+
+	WorkbookFactory.create(inputStream)
+	
+	WorkbookFactory.create(File file)
+	
+	WorkbookFactory.create(File file , String password)
+	
+	WorkbookFactory.create(inputStream, String password)
+	
+	WorkbookFactory.create(File file , String password , boolean readonly)
+	
+## WorkBook Commands  (return type is mostly Sheet)
+
+	workbook.close()
+	
+	workbook.cloneSheet(int sheetNum)
+	
+	workbook.createDataFormat()
+	
+	workbook.createFont()
+	
+	workbook.createName()
+	
+	workbook.createSheet()
+	
+	workbook.forEach((sheet)->{})
+	
+	workbook.getActiveSheetIndex()
+	
+	workbook.getCellStyleAt()
+	
+	workbook.getSheet(String name)
+	
+	workbook.getSheetIndex(name
+	
+	workbook.getNumberOfSheets()
+	
+	workbook.getSheetAt(idx)
+	
+	workbook.iterator()
+	
+## sheet consists of rows.
+
+	sheet.getFirstRowNum()
+	
+	sheet.getLastRowNum()
+	
+	sheet.getHeader()
+	
+	sheet.getFooter()
+	
+	sheet.forEach()
+	
+	sheet.getPhysicalNumberOfRows()
+	
+	
+
+## rows consists of cells.
+
+	Iterator<Cell> cellIterator = ((Row) row).cellIterator();
+	
+	cell.getCellType()
+	
+	cell.getRowIndex()
+	
+	cell.getColumnIndex()
+
+
+
+	
+	
