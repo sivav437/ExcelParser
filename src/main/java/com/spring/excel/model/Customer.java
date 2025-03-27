@@ -8,7 +8,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="customer")
-public class Customer implements ExcelSheet {
+public class Customer extends ExcelSheet {
 	
 	
 	@Id
@@ -23,10 +23,12 @@ public class Customer implements ExcelSheet {
 		return customer_id;
 	}
 	
-	public Customer clone() throws CloneNotSupportedException {
-		Customer cloned=(Customer) super.clone();
-		return cloned;
-	}
+	// not required coz throwing errors
+	
+//	public Customer clone() throws CloneNotSupportedException {
+//		Customer cloned=(Customer) super.clone();
+//		return cloned;
+//	}
 
 	public void setCustomer_id(int customer_id) {
 		this.customer_id = customer_id;
@@ -52,7 +54,6 @@ public class Customer implements ExcelSheet {
 
 	public Customer() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public Customer(int customer_id, String customer_name, String customer_password) {

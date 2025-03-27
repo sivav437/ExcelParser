@@ -27,26 +27,19 @@ public class ExcelController {
     
     @GetMapping("/parse-excel")
     public List<List<ExcelSheet>> parseExcel(@RequestParam("classPath") String classPath) throws IOException { //@RequestParam("filePath") String filePath
-    	//ClassResourcePath()
-    	//String classPath = "excel/customer1.xlsx";
+    	
         return (List<List<ExcelSheet>>) excelParserService.parseExcelFile(classPath);
     }
     
-//    @PostMapping("/upload-excel")
-//    public List<List<String>> uploadExcel(@RequestParam("file") MultipartFile file) throws IOException {
-//        File tempFile = File.createTempFile("excel", ".xlsx");
-//        file.transferTo(tempFile);
-//        return excelParserService.parseExcelFile(tempFile.getAbsolutePath());
-//    }
     
     @PostMapping("/upload-excel")
-    public ResponseEntity<List<List<String>>> uploadExcel(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<List<List<ExcelSheet>>> uploadExcel(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(null); // Return 400 if no file is uploaded
+            return ResponseEntity.badRequest().body(null); 
         }
 
-        List<List<String>> parsedData = excelParserService.parseExcelFromUpload(file);
-        return ResponseEntity.ok(parsedData); // Return 200 with parsed data
+        List<List<ExcelSheet>> parsedData = excelParserService.parseExcelFromUpload(file);
+        return ResponseEntity.ok(parsedData); 
     }
     
 }
