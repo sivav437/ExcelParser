@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="product")
-public class Product implements ExcelSheet {
+public class Product extends ExcelSheet {
 	
 	@Id
 	private int product_id;
@@ -20,10 +20,10 @@ public class Product implements ExcelSheet {
 	}
 
 	
-	public Product clone() throws CloneNotSupportedException {
-		Product cloned=(Product) super.clone();
-		return cloned;
-	}
+//	public Product clone() throws CloneNotSupportedException {
+//		Product cloned=(Product) super.clone();
+//		return cloned;
+//	}
 	
 	public void setProduct_id(int product_id) {
 		this.product_id = product_id;
@@ -54,7 +54,6 @@ public class Product implements ExcelSheet {
 
 	public Product() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

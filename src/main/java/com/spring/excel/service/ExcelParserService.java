@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,12 @@ public class ExcelParserService {
 	@Autowired
 	private ProductRepo product_repo;
 	
-	private CommonRepo repo;
+	
+	private final ApplicationContext context;
+
+    public ExcelParserService(ApplicationContext context) {
+        this.context = context;
+    }
 	
 	
 	
@@ -42,28 +48,28 @@ public class ExcelParserService {
     
     List<Product> products=new ArrayList<>();
 	
-	public Customer cust;
-	
-	public Product prod;
+    // note : should not declare entity here coz it will re-update all.
 	
 	
+	public List<List<ExcelSheet>> parseExcelFile(String filePath) throws IOException 
+	{ 
+		
+        ClassPathResource resource = new ClassPathResource(filePath);
+        
+        return parsingExcelCode(resource.getInputStream());
+                
+	}  
 	
-	public List<List<ExcelSheet>> parseExcelFile(String filePath) throws IOException {
+	
+	private List<List<ExcelSheet>> parsingExcelCode(InputStream inputStream) throws IOException{
 		
 		List<List<ExcelSheet>> allData = new ArrayList<>();
 		
-//        List<List<String>> data = new ArrayList<>();
-        
-        ClassPathResource resource = new ClassPathResource(filePath);
-        
-        
-        
-        
-        try (InputStream inputStream = resource.getInputStream();
+		CommonRepo<? extends ExcelSheet, Integer> repository = null;
+		try (
                 Workbook workbook = WorkbookFactory.create(inputStream)) {
         	
         	
-               // Get the first worksheet
         	
         	int num_sheets=workbook.getNumberOfSheets();
         	int idx=0;
@@ -81,22 +87,23 @@ public class ExcelParserService {
                System.out.println(sheet_name);
                
                switch(sheet_name) {
+               
                		case "customerData":
-               			this.cust=new Customer();
-               			System.out.println("customerData sheet switch");
-               			this.prod=null;
-               			//repo=cust_repo;
+               			
+               			
+               			 repository = (CommonRepo<Customer, Integer>) context.getBean("customerRepo");
+               			
                			break;
+               			
                		case "productData":
                			System.out.println("productData sheet switch");
-               			this.prod=new Product();
-               			this.cust=null;
-               			//repo=product_repo;
-
+               			
+               			repository = (CommonRepo<Product, Integer>) context.getBean("productRepo");
+               			
                			break;
+               		
                }
 
-               // Iterate over rows
                int start_row=sheet.getFirstRowNum();
                int end_row=sheet.getLastRowNum();
                
@@ -115,36 +122,12 @@ public class ExcelParserService {
         		  
         		  case STRING:
                        headers[start_cell_header]= cell.getStringCellValue();
-                       System.out.println("Header type is "+cell.getStringCellValue());
+                      // System.out.println("Header type is "+cell.getStringCellValue());
                        break;
                   
-        		  case NUMERIC:
-                      if (DateUtil.isCellDateFormatted(cell)) {
-                    	  headers[start_cell_header]= cell.getDateCellValue().toString();
-                    	  break;
-                      }
-                      headers[start_cell_header]= String.valueOf(cell.getNumericCellValue());
-                      break;
-                  
-        		  case BOOLEAN:
-                	  headers[start_cell_header]= String.valueOf(cell.getBooleanCellValue());
-                	  break;
-                  
-        		  case FORMULA:
-                	  headers[start_cell_header]= cell.getCellFormula();
-                	  break;
-                	  
-        		  case BLANK:
-        			  headers[start_cell_header]= "";
-                  
-        		  default:
-                	  headers[start_cell_header]= "";
         		  }
          	  }
          	  
-         	 for(String i:headers) {
-         		 System.out.println(i+" Header Name with sheet "+sheet_name);
-         	 }
          	  
          	   
                
@@ -161,70 +144,73 @@ public class ExcelParserService {
             	  Customer localCust = null;
             	  Product localProd = null;
             	  
-            	  System.out.println(sheet_name+" sheet name at start_row for loop");
-            	  if(sheet_name.equals("customerData")) {
-            		  System.out.println("entered at sheet_name with cdata");
+            	  if(sheet_name.equals("customerData")) 
+            	  {
             		  localCust=new Customer();
-            	  }else if(sheet_name.equals("productData")) {
-            		  System.out.println("entered at sheet_name with pdata");
-            		  localProd=new Product();
+            		  
             	  }
-            	  System.out.println((localCust==null)+" Local Cust is Null");
-            	  for(;start_cell<end_cell;start_cell++) {
+            	  else if(sheet_name.equals("productData")) 
+            	  {
+            		  localProd=new Product();
             		  
-            		  Cell cell=row.getCell(start_cell);
-            		  System.out.println(cell.getCellType());
-            		  
-            		  
-            		  
-            		  switch(headers[start_cell]) {
-            		  case "customer_id":
-            			  System.out.println("at customer_id cell of switch "+start_cell);
-            			  int customer_id=(int) getCellValue(cell,"customer_id");
-            			  localCust.setCustomer_id(id);
-            			  id++;
-            			  break;
-            		  case "customer_name":
-            			  System.out.println("at customer_name cell of switch "+start_cell);
-            			  String customer_name=(String) getCellValue(cell,"customer_name");
-            			  localCust.setCustomer_name(customer_name);
-            			  break;
-            		  case "customer_password":
-            			  System.out.println("at customer_password cell of switch "+start_cell);
-            			  String customer_password=(String) getCellValue(cell,"customer_password");
-            			  localCust.setCustomer_password(customer_password);
-            			  break;
-            			  
-            		  case "product_id":
-            			  int product_id=(int) getCellValue(cell,"product_id");
-            			  localProd.setProduct_id(product_id);
-            			  break;
-            		  case "product_name":
-            			  String product_name=(String) getCellValue(cell,"product_name");
-            			  localProd.setProduct_name(product_name);
-            			  break;
-            		  case "product_price":
-            			  int product_price=(int) getCellValue(cell,"product_price");
-            			  localProd.setProduct_price(product_price);
-            			  break;
-            		  }
-            		  String cellValue = getCellValueAsString(cell); //converting all in a string.
-            		  //System.out.print(cellValue+" ");
             	  }
             	  
-            	  System.out.println("----------------------------");
+            	  for(;start_cell<end_cell;start_cell++) 
+            	  {
+            		  
+            		  Cell cell=row.getCell(start_cell);
+            		  
+            		  
+            		  switch(headers[start_cell]) 
+            		  {
+            	 
+            		  	case "customer_id":
+            			  
+            		  		int customer_id=(int) getCellValue(cell,"customer_id");
+            		  		localCust.setCustomer_id(customer_id);
+            		  		break;
+            			  
+            		  	case "customer_name":
+            			  
+            		  		String customer_name=(String) getCellValue(cell,"customer_name");
+            		  		localCust.setCustomer_name(customer_name);
+            		  		break;
+            			  
+            		  	case "customer_password":
+            			  
+            		  		String customer_password=(String) getCellValue(cell,"customer_password");
+            		  		localCust.setCustomer_password(customer_password);
+            		  		break;
+            			  
+            		  	case "product_id":
+            			  
+            		  		int product_id=(int) getCellValue(cell,"product_id");
+            		  		localProd.setProduct_id(product_id);
+            		  		break;
+            			  
+            		  	case "product_name":
+            			  
+            		  		String product_name=(String) getCellValue(cell,"product_name");
+            		  		localProd.setProduct_name(product_name);
+            		  		break;
+            			  
+            		  	case "product_price":
+            			  
+            		  		int product_price=(int) getCellValue(cell,"product_price");
+            		  		localProd.setProduct_price(product_price);
+            		  		break;
+            		 
+            		  }
+            	  }
+            	  
             	  if(localCust != null && localCust.getCustomer_id()>0) {
-//            		  cust_repo.save(cust);
-            		  //Customer cust_copy=cust.clone();
+
             		  customers.add(localCust);
             		 
-            		  System.out.println(localCust+" Customer Data is");
             	  }
             	  
             	  if(localProd !=null && localProd.getProduct_id()>0 ) {
-            		  //Product prod_copy=prod.clone();
             		  products.add(localProd);
-            		  System.out.println(localProd+" Product Data is");
             	  }
             	  
             	  
@@ -232,75 +218,42 @@ public class ExcelParserService {
             	   
                }
                
-//               sheet.forEach(row -> {
-//                   List<String> rowData = new ArrayList<>();
-
-                   // Iterate over cells in the row
-                   
-//                   Iterator<Cell> cellIterator = ((Row) row).cellIterator();
-//                   if(row.getRowNum()==0) {
-//                	   System.out.println("GetRowNum is 0");
-//                   }
-//                   System.out.println("Row nums are "+row.getRowNum()); // starts rows from 0 to value presented.
-//                   System.out.println(row.getPhysicalNumberOfCells()+" physical num of cells"); // it gives total cells in a row
-//                   System.out.println(row.getLastCellNum()+" laast cell number");
-//                   System.out.println(row.getFirstCellNum()+" first cell number");
-                  
-                   
-                   
-                   
-//                   
-//                   while (cellIterator.hasNext()) {
-//                	   
-//                       Cell cell = cellIterator.next();
-//                       
-//                       System.out.println(cell.getRowIndex()+"-- cell.getRowIndex");
-//                       System.out.println(cell.getColumnIndex()+"-- cell.getcolumnidx");
-//                       String cellValue = getCellValueAsString(cell);
-                       
-                       
-//                       if(cell.getColumnIndex()==0) {
-//                    	   System.out.println(cell.getCellType()+" cell type ");
-//                       }
-                       
-//                       rowData.add(cellValue);
-                       
-//                   }
-//                   for (Cell cell : row) {
-//                       String cellValue = getCellValueAsString(cell);
-//                       rowData.add(cellValue);
-//                   }
-//
-//                   
-//               });
-               System.out.println(idx+"idx is");
-               
+             
                idx++;
         } //while block
                
         if(customers!=null) { 
         	
         	allData.add(new ArrayList<ExcelSheet>(customers));
-        	System.out.print("customers: "+customers);
+        	
         	cust_repo.saveAll(customers);
-        	System.out.println(cust_repo.findAll()+" customers from db");
+        	
+        	CommonRepo<Customer, Integer> customerRepo = (CommonRepo<Customer, Integer>) repository;
+            
+        	customerRepo.saveAll( customers);
+        	
+        	//System.out.println(cust_repo.findAll()+" customers from db");
         	}
         
         if(products != null) {
+        	
         	allData.add(new ArrayList<ExcelSheet>(products));
-        	System.out.print("products: "+products);
-        	product_repo.saveAll(products);
-        	System.out.println(product_repo.findAll()+" products from db");
+        	
+        	//System.out.print("products: "+products);
+        	
+        	CommonRepo<Product, Integer> productRepo = (CommonRepo<Product, Integer>) repository;
+            
+        	productRepo.saveAll(products);
+        	
+        	//System.out.println(product_repo.findAll()+" products from db");
         	}
         
         
-        //System.out.println("products  : "+products);
            return allData;
         
 	} // try block
-        
-	}  // method block
-	
+
+	}
 	
 	
 	private Object getCellValue(Cell cell,String headerName) {
@@ -356,40 +309,19 @@ public class ExcelParserService {
         }
     }
 
-	public List<List<String>> parseExcelFromUpload(MultipartFile file) throws IOException{
+	
+	public List<List<ExcelSheet>> parseExcelFromUpload(MultipartFile file) throws IOException
+	{
 		
-		List<List<String>> data = new ArrayList<>();
-		List<Customer> customers=new ArrayList<>();
+		InputStream inputStream = file.getInputStream();
 		
-		try (InputStream inputStream = file.getInputStream();
-	             Workbook workbook = WorkbookFactory.create(inputStream)) {
-
-	            // Get the first worksheet
-	            Sheet sheet = workbook.getSheetAt(0);
-	           
-
-	            // Use forEach to iterate over rows
-	            sheet.forEach(row -> {
-	                List<String> rowData = new ArrayList<>();
-
-	                // Use cellIterator to iterate over cells in the row
-	                Iterator<Cell> cellIterator = row.cellIterator();
-	                System.out.println("--> ");
-	                while (cellIterator.hasNext()) {
-	                    Cell cell = cellIterator.next();
-	                    
-	                    String cellValue = getCellValueAsString(cell);
-	                    rowData.add(cellValue);
-	                }
-
-	                data.add(rowData);
-	            });
-	        }
-
-	        return data;
-	        
+		return parsingExcelCode(inputStream);
+			
 	}
-	    }
+	
+	
+	
+}
 	
 	
 
